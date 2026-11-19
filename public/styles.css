@@ -299,8 +299,8 @@ svg {
 /* ---------- layout ---------- */
 .layout {
   display: grid;
-  grid-template-columns: 204px minmax(0, 1fr) 236px;
-  gap: 56px;
+  grid-template-columns: 176px minmax(0, 1fr) 220px;
+  gap: 40px;
   align-items: start;
   padding: 44px 0 96px;
 }
@@ -875,7 +875,7 @@ svg {
 /* ---------- repo cards ---------- */
 .repo-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
   gap: 12px;
 }
 
@@ -1495,7 +1495,7 @@ svg {
 }
 
 /* ---------- responsive ---------- */
-@media (max-width: 1180px) {
+@media (max-width: 1040px) {
   .layout {
     grid-template-columns: 190px minmax(0, 1fr);
     gap: 40px;
