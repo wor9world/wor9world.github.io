@@ -1,7 +1,9 @@
 # GitHub Home
 
 หน้า home สำหรับแสดง repository ทั้งหมดจาก GitHub พร้อม search / filter / sort
-ดึงข้อมูลผ่าน `gh` CLI บนเครื่องคุณ (ไม่มีการส่ง token ไปฝั่ง browser)
+รองรับ 2 โหมด: รันในเครื่องผ่าน `gh` CLI (เห็น private repo) และ static บน GitHub Pages
+
+**เว็บออนไลน์:** <https://wor9world.github.io/>
 
 ## วิธีรัน
 
@@ -47,13 +49,24 @@ node server.mjs
 - ปุ่มลัด `/` เพื่อโฟกัสช่องค้นหา, `Esc` เพื่อล้างคำค้นหา
 - ถ้า `gh` ใช้ไม่ได้ จะ fallback ไป GitHub REST API แบบ public
 
+## GitHub Pages (static mode)
+
+หน้าเว็บเดียวกันนี้ถูก deploy ผ่าน GitHub Actions ไปที่
+<https://wor9world.github.io/> โดย publish เฉพาะโฟลเดอร์ `public/`
+
+- ตั้งค่าบัญชีที่ใช้บน Pages ได้ที่ `public/config.js`
+- บน Pages จะดึง GitHub REST API จาก browser โดยตรง จึงเห็น **เฉพาะ repo public**
+- workflow อยู่ที่ `.github/workflows/pages.yml` (รันทุกครั้งที่ push เข้า `main`)
+
 ## โครงสร้าง
 
 ```
-server.mjs        เซิร์ฟเวอร์ HTTP + ตัวดึงข้อมูล GitHub (ไม่มี dependency)
-public/index.html หน้าเว็บ
-public/styles.css ธีมและ layout
-public/app.js     fetch + render + interaction
+server.mjs         เซิร์ฟเวอร์ HTTP + ตัวดึงข้อมูล GitHub (ไม่มี dependency)
+public/index.html  หน้าเว็บ
+public/styles.css  ธีมและ layout
+public/app.js      fetch + render + interaction (รองรับ server และ static)
+public/config.js   บัญชี GitHub สำหรับโหมด static
+.github/workflows  GitHub Actions สำหรับ deploy Pages
 ```
 
 ## API
