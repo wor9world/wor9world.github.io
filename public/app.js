@@ -67,6 +67,7 @@ const $ = (id) => document.getElementById(id);
 const refs = {
   brandAvatar: $('brand-avatar'),
   brandLogin: $('brand-login'),
+  breadcrumbLogin: $('breadcrumb-login'),
   profileLink: $('profile-link'),
   heroAvatar: $('hero-avatar'),
   metaLogin: $('meta-login'),
@@ -74,6 +75,16 @@ const refs = {
   metaFollowing: $('meta-following'),
   metaSince: $('meta-since'),
   metaLocation: $('meta-location'),
+  railAvatar: $('rail-avatar'),
+  railName: $('rail-name'),
+  railLogin: $('rail-login'),
+  railFollowers: $('rail-followers'),
+  railFollowing: $('rail-following'),
+  railProfileLink: $('rail-profile-link'),
+  railFetched: $('rail-fetched'),
+  languageBreakdown: $('language-breakdown'),
+  sideNoteTitle: $('side-note-title'),
+  sideNoteDesc: $('side-note-desc'),
   statRepos: $('stat-repos'),
   statStars: $('stat-stars'),
   statForks: $('stat-forks'),
@@ -94,6 +105,7 @@ const refs = {
   clearFilters: $('clear-filters'),
   fetchedAt: $('fetched-at'),
   footerNote: $('footer-note'),
+  footerYear: $('footer-year'),
   themeToggle: $('theme-toggle'),
   viewButtons: [...document.querySelectorAll('.view-toggle__btn')],
 };
@@ -118,7 +130,7 @@ function el(tag, attrs = {}, ...children) {
 }
 
 function languageColor(name) {
-  if (!name) return 'var(--faint)';
+  if (!name) return 'var(--text-tertiary)';
   if (LANGUAGE_COLORS[name]) return LANGUAGE_COLORS[name];
   let hash = 0;
   for (let i = 0; i < name.length; i += 1) hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
@@ -282,9 +294,13 @@ async function load({ refresh = false } = {}) {
     if (refs.footerNote) {
       refs.footerNote.textContent =
         state.source === 'static'
-          ? 'GitHub Pages · แสดงเฉพาะ repo public'
-          : 'สร้างด้วย Node.js ล้วน ๆ ไม่มี dependency';
+          ? 'Static site · GitHub Pages'
+          : 'Local server · Node.js';
     }
+
+    refs.sideNoteTitle.textContent = state.source === 'static' ? 'Static site' : 'Local server';
+    refs.sideNoteDesc.textContent =
+      state.source === 'static' ? 'deployed via GitHub Actions' : 'private repos visible';
 
     if (state.language !== 'all' && !state.repos.some((repo) => repo.language?.name === state.language)) {
       state.language = 'all';
@@ -292,6 +308,7 @@ async function load({ refresh = false } = {}) {
 
     renderProfile();
     renderStats();
+    renderLanguages();
     renderFilters();
     render();
     renderFetchedAt();
@@ -305,6 +322,8 @@ async function load({ refresh = false } = {}) {
       refs.cards.innerHTML = '';
       refs.resultCount.textContent = '';
       refs.fetchedAt.textContent = 'โหลดไม่สำเร็จ';
+      refs.railFetched.textContent = 'โหลดไม่สำเร็จ';
+      refs.languageBreakdown.innerHTML = '<p class="rail-empty">โหลดข้อมูลไม่สำเร็จ</p>';
     }
   } finally {
     state.loading = false;
@@ -322,17 +341,25 @@ function renderProfile() {
   const name = profile.name || profile.login;
   document.title = `${name} · GitHub Home`;
 
-  for (const img of [refs.brandAvatar, refs.heroAvatar]) {
+  for (const img of [refs.brandAvatar, refs.heroAvatar, refs.railAvatar]) {
     if (profile.avatarUrl) img.src = profile.avatarUrl;
     img.alt = `รูปโปรไฟล์ของ ${name}`;
   }
 
   refs.brandLogin.textContent = profile.login;
   refs.profileLink.href = profile.url;
+  refs.breadcrumbLogin.textContent = profile.login;
+  refs.breadcrumbLogin.href = profile.url;
   refs.metaLogin.textContent = `@${profile.login}`;
   refs.metaLogin.href = profile.url;
   refs.metaFollowers.textContent = `${formatNumber(profile.followers)} followers`;
   refs.metaFollowing.textContent = `${formatNumber(profile.following)} following`;
+
+  refs.railName.textContent = name;
+  refs.railLogin.textContent = `@${profile.login}`;
+  refs.railFollowers.textContent = formatNumber(profile.followers);
+  refs.railFollowing.textContent = formatNumber(profile.following);
+  refs.railProfileLink.href = profile.url;
 
   if (profile.createdAt) {
     const year = new Date(profile.createdAt).getFullYear();
@@ -349,17 +376,104 @@ function renderStats() {
   const repos = state.repos;
   const stars = repos.reduce((sum, repo) => sum + (repo.stars || 0), 0);
   const forks = repos.reduce((sum, repo) => sum + (repo.forks || 0), 0);
-  const languages = new Set(repos.map((repo) => repo.language?.name).filter(Boolean));
 
   refs.statRepos.textContent = formatNumber(repos.length);
   refs.statStars.textContent = formatNumber(stars);
   refs.statForks.textContent = formatNumber(forks);
-  refs.statLanguages.textContent = formatNumber(languages.size);
+  refs.statLanguages.textContent = formatNumber(languageTotals().length);
 }
 
 function renderFetchedAt() {
   if (!state.fetchedAt) return;
-  refs.fetchedAt.textContent = `อัปเดต ${dateFmt.format(new Date(state.fetchedAt))}`;
+  const label = `อัปเดต ${dateFmt.format(new Date(state.fetchedAt))}`;
+  refs.fetchedAt.textContent = label;
+  refs.railFetched.textContent = label;
+}
+
+/* ---------- render: languages ---------- */
+
+function languageTotals() {
+  const bytes = new Map();
+  let hasBytes = false;
+
+  for (const repo of state.repos) {
+    for (const lang of repo.languages || []) {
+      if (!lang.size) continue;
+      const entry = bytes.get(lang.name) || { value: 0, color: lang.color || languageColor(lang.name) };
+      entry.value += lang.size;
+      bytes.set(lang.name, entry);
+      hasBytes = true;
+    }
+  }
+
+  const source = new Map();
+  if (hasBytes) {
+    for (const [name, entry] of bytes) source.set(name, entry);
+  } else {
+    for (const repo of state.repos) {
+      const name = repo.language?.name;
+      if (!name) continue;
+      const entry = source.get(name) || { value: 0, color: repo.language?.color || languageColor(name) };
+      entry.value += 1;
+      source.set(name, entry);
+    }
+  }
+
+  return [...source.entries()]
+    .map(([name, entry]) => ({ name, ...entry }))
+    .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name));
+}
+
+function renderLanguages() {
+  const entries = languageTotals();
+
+  if (!entries.length) {
+    refs.languageBreakdown.innerHTML = '<p class="rail-empty">ยังไม่มีข้อมูลภาษา</p>';
+    return;
+  }
+
+  const total = entries.reduce((sum, entry) => sum + entry.value, 0);
+  const percent = (value) => {
+    const pct = (value / total) * 100;
+    return pct > 0 && pct < 1 ? '<1%' : `${Math.round(pct)}%`;
+  };
+  const top = entries.slice(0, 4);
+  const rest = entries.slice(4);
+  const segments = top.map((entry) => ({ ...entry }));
+  if (rest.length) {
+    segments.push({
+      name: 'อื่น ๆ',
+      value: rest.reduce((sum, entry) => sum + entry.value, 0),
+      color: 'var(--text-tertiary)',
+    });
+  }
+
+  const bar = el(
+    'div',
+    { class: 'lang-bar', role: 'img', 'aria-label': 'สัดส่วนภาษาใน repository' },
+    segments.map((segment) =>
+      el('span', {
+        style: `width:${((segment.value / total) * 100).toFixed(2)}%;--seg:${segment.color}`,
+        title: `${segment.name} ${percent(segment.value)}`,
+      })
+    )
+  );
+
+  const legend = el(
+    'ul',
+    { class: 'lang-legend' },
+    segments.map((segment) =>
+      el(
+        'li',
+        { class: 'lang-row' },
+        el('span', { class: 'lang-dot', style: `--dot:${segment.color}` }),
+        el('span', { class: 'lang-name' }, segment.name),
+        el('span', { class: 'lang-value' }, percent(segment.value))
+      )
+    )
+  );
+
+  refs.languageBreakdown.replaceChildren(bar, legend);
 }
 
 /* ---------- render: filters ---------- */
@@ -643,6 +757,8 @@ refs.viewButtons.forEach((button) => {
 });
 refs.sort.value = state.sort;
 refs.cards.dataset.view = state.view;
+
+if (refs.footerYear) refs.footerYear.textContent = String(new Date().getFullYear());
 
 renderSkeletons();
 load();

@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GitHub Home — Repositories</title>
+  <title>wor9world · GitHub Home</title>
   <meta name="description" content="รวม repository ทั้งหมดจาก GitHub ไว้ในหน้าเดียว" />
   <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://avatars.githubusercontent.com" />
-  <meta name="theme-color" content="#f6f7f4" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#0a0d0f" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
   <script>
     try {
       const saved = localStorage.getItem('theme');
@@ -23,20 +23,23 @@
 <body>
   <a class="skip-link" href="#repos">ข้ามไปที่รายการ repo</a>
 
-  <header class="site-header">
-    <div class="shell site-header__inner">
-      <a class="brand" href="#top">
-        <img id="brand-avatar" class="brand__avatar" alt="" width="28" height="28" />
-        <span class="brand__login" id="brand-login">github</span>
+  <header class="topbar">
+    <div class="shell topbar__inner">
+      <a class="brand" href="#overview" aria-label="กลับขึ้นด้านบน">
+        <img id="brand-avatar" class="brand__avatar" alt="" width="26" height="26" />
+        <span class="brand__name" id="brand-login">wor9world</span>
         <span class="brand__slash">/</span>
-        <span class="brand__label">home</span>
+        <span class="brand__page">home</span>
       </a>
 
-      <nav class="site-nav" aria-label="ลิงก์ภายนอก">
-        <a id="profile-link" class="nav-link" href="https://github.com" target="_blank" rel="noreferrer">
+      <nav class="topbar__nav" aria-label="เมนูหลัก">
+        <a class="nav-link nav-link--active" href="#overview">Overview</a>
+        <a class="nav-link" href="#repos">Repositories</a>
+        <a id="profile-link" class="nav-link nav-link--icon" href="https://github.com" target="_blank" rel="noreferrer">
           GitHub
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" /></svg>
         </a>
+        <span class="topbar__divider" aria-hidden="true"></span>
         <button id="theme-toggle" class="icon-button" type="button" aria-label="สลับธีมสว่าง/มืด">
           <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="12" r="4" />
@@ -50,32 +53,73 @@
     </div>
   </header>
 
-  <main id="top">
-    <div class="shell">
-      <section class="hero" aria-labelledby="hero-title">
-        <div class="hero__identity">
-          <span class="hero__avatar-wrap">
-            <img id="hero-avatar" class="hero__avatar" alt="" width="72" height="72" />
-            <span class="hero__status" title="ออนไลน์บน GitHub"></span>
-          </span>
-          <p class="eyebrow"><span class="pulse" aria-hidden="true"></span> GITHUB HOME</p>
-        </div>
+  <div class="shell layout">
+    <aside class="sidebar" aria-label="สารบัญ">
+      <div class="side-group">
+        <p class="side-label">Home</p>
+        <a class="side-link side-link--active" href="#overview">Overview</a>
+        <a class="side-link" href="#repos">Repositories</a>
+        <a class="side-link" href="#languages">Languages</a>
+      </div>
 
-        <h1 id="hero-title" class="hero__title">
-          ทุกโปรเจกต์ของผม<br />
-          <span class="accent">อยู่ที่นี่</span>
-        </h1>
+      <div class="side-group">
+        <p class="side-label">Links</p>
+        <a class="side-link side-link--external" href="https://github.com/wor9world" target="_blank" rel="noreferrer">
+          GitHub profile
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" /></svg>
+        </a>
+        <a class="side-link side-link--external" href="https://github.com/wor9world/wor9world.github.io" target="_blank" rel="noreferrer">
+          Source repo
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" /></svg>
+        </a>
+      </div>
+
+      <div class="side-note">
+        <span class="status-dot" aria-hidden="true"></span>
+        <div>
+          <p id="side-note-title">Static site</p>
+          <p id="side-note-desc">deployed via GitHub Actions</p>
+        </div>
+      </div>
+    </aside>
+
+    <main id="overview" class="content">
+      <section class="hero" aria-labelledby="hero-title">
+        <nav class="breadcrumb" aria-label="breadcrumb">
+          <a href="https://github.com/wor9world" target="_blank" rel="noreferrer" id="breadcrumb-login">wor9world</a>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+          <span>home</span>
+        </nav>
+
+        <p class="hero__kicker">PERSONAL HOMEPAGE</p>
+
+        <div class="hero__heading">
+          <img id="hero-avatar" class="hero__avatar" alt="" width="56" height="56" />
+          <h1 id="hero-title">ทุกโปรเจกต์ของผม<br /><span class="accent">อยู่ในที่เดียว</span></h1>
+        </div>
 
         <p class="hero__lead">
           รวม repository ที่ผมดูแลบน GitHub — ค้นหา ดูภาษาหลัก และติดตามความเคลื่อนไหวล่าสุดได้ในหน้าเดียว
+          ข้อมูลอัปเดตตรงจาก GitHub API ทุกครั้งที่โหลด
         </p>
 
-        <div class="hero__meta" id="hero-meta">
-          <a id="meta-login" class="meta-chip meta-chip--login" href="https://github.com" target="_blank" rel="noreferrer">@github</a>
-          <span class="meta-chip" id="meta-followers">0 followers</span>
-          <span class="meta-chip" id="meta-following">0 following</span>
-          <span class="meta-chip" id="meta-since">joined —</span>
-          <span class="meta-chip meta-chip--muted" id="meta-location" hidden></span>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="#repos">
+            ดู repositories
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6" /></svg>
+          </a>
+          <a class="btn btn--ghost" href="https://github.com/wor9world" target="_blank" rel="noreferrer">
+            โปรไฟล์ GitHub
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" /></svg>
+          </a>
+        </div>
+
+        <div class="hero__meta">
+          <a id="meta-login" class="meta-item meta-item--strong" href="https://github.com" target="_blank" rel="noreferrer">@wor9world</a>
+          <span class="meta-item" id="meta-followers">0 followers</span>
+          <span class="meta-item" id="meta-following">0 following</span>
+          <span class="meta-item" id="meta-since">joined —</span>
+          <span class="meta-item" id="meta-location" hidden></span>
         </div>
 
         <dl class="stats" aria-label="สรุปภาพรวม">
@@ -101,8 +145,9 @@
       <section id="repos" class="repos-section" aria-labelledby="repos-title">
         <div class="section-head">
           <div>
-            <p class="eyebrow eyebrow--small">REPOSITORIES</p>
-            <h2 id="repos-title" class="section-title">โปรเจกต์ทั้งหมด</h2>
+            <p class="section-kicker">Repositories</p>
+            <h2 id="repos-title">โปรเจกต์ทั้งหมด</h2>
+            <p class="section-desc">รายการ repo สาธารณะที่ดึงสดจาก GitHub</p>
           </div>
           <p class="result-count" id="result-count" aria-live="polite"></p>
         </div>
@@ -160,7 +205,7 @@
             <strong>ดึงข้อมูลจาก GitHub ไม่สำเร็จ</strong>
             <p id="error-text"></p>
           </div>
-          <button id="retry-button" class="button" type="button">ลองอีกครั้ง</button>
+          <button id="retry-button" class="btn btn--outline btn--sm" type="button">ลองอีกครั้ง</button>
         </div>
 
         <div id="repo-cards" class="repo-cards" data-view="grid" aria-busy="true"></div>
@@ -169,18 +214,61 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
           <h3 id="empty-title">ไม่พบ repo ที่ตรงกัน</h3>
           <p id="empty-text">ลองเปลี่ยนคำค้นหา หรือเลือกภาษาใหม่</p>
-          <button id="clear-filters" class="button button--ghost" type="button">ล้างตัวกรอง</button>
+          <button id="clear-filters" class="btn btn--ghost btn--sm" type="button">ล้างตัวกรอง</button>
         </div>
       </section>
-    </div>
-  </main>
+    </main>
+
+    <aside class="rail" aria-label="ข้อมูลเพิ่มเติม">
+      <section class="rail-block">
+        <h3 class="rail-label">โปรไฟล์</h3>
+        <div class="rail-profile">
+          <img id="rail-avatar" class="rail-avatar" alt="" width="38" height="38" />
+          <div class="rail-profile__text">
+            <p id="rail-name" class="rail-profile__name">—</p>
+            <p id="rail-login" class="rail-profile__login">@—</p>
+          </div>
+        </div>
+        <dl class="rail-stats">
+          <div><dt>Followers</dt><dd id="rail-followers">—</dd></div>
+          <div><dt>Following</dt><dd id="rail-following">—</dd></div>
+        </dl>
+        <a id="rail-profile-link" class="btn btn--outline btn--sm btn--block" href="https://github.com" target="_blank" rel="noreferrer">
+          เปิดโปรไฟล์ GitHub
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" /></svg>
+        </a>
+      </section>
+
+      <section id="languages" class="rail-block">
+        <h3 class="rail-label">ภาษา</h3>
+        <div id="language-breakdown" class="lang-breakdown">
+          <p class="rail-empty">กำลังโหลด…</p>
+        </div>
+      </section>
+
+      <section class="rail-block">
+        <h3 class="rail-label">ในหน้านี้</h3>
+        <nav class="toc" aria-label="สารบัญในหน้านี้">
+          <a href="#overview">Overview</a>
+          <a href="#repos">Repositories</a>
+          <a href="#languages">Languages</a>
+        </nav>
+      </section>
+
+      <div class="rail-status">
+        <span class="status-dot" aria-hidden="true"></span>
+        <div>
+          <p>ซิงก์จาก GitHub</p>
+          <p id="rail-fetched">—</p>
+        </div>
+      </div>
+    </aside>
+  </div>
 
   <footer class="site-footer">
     <div class="shell site-footer__inner">
-      <p>
-        ข้อมูลจาก GitHub API · <span id="fetched-at">กำลังโหลด…</span>
-      </p>
-      <p class="site-footer__note" id="footer-note">สร้างด้วย Node.js ล้วน ๆ ไม่มี dependency</p>
+      <p>© <span id="footer-year">2026</span> wor9world · ข้อมูลจาก GitHub API · <span id="fetched-at">กำลังโหลด…</span></p>
+      <p class="site-footer__note" id="footer-note">Static site · GitHub Pages</p>
     </div>
   </footer>
 
